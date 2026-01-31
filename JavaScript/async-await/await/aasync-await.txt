@@ -1,0 +1,169 @@
+🔹 Why async / await?
+
+JavaScript single-threaded 
+
+API calls
+
+DB calls
+
+File read
+
+Timers
+
+
+
+🔹 Without async–await (Promise style)
+function getData() {
+  return fetch("https://api.example.com/users")
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+    })
+    .catch(err => {
+      console.log(err);
+    });
+}
+
+
+😵 Hard to read + chaining hell
+
+🔹 With async–await (Clean & readable)
+async function getData() {
+  try {
+    const response = await fetch("https://api.example.com/users");
+    const data = await response.json();
+    console.log(data);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+
+✨ Looks like synchronous code
+✨ Easy debugging
+✨ Industry standard
+
+🔹 What does async do?
+async function test() {
+  return 10;
+}
+
+
+🔸 Yeh actually return karta hai:
+
+Promise.resolve(10)
+
+
+👉 async function ALWAYS returns a Promise
+
+🔹 What does await do?
+const result = await somePromise;
+
+
+👉 await:
+
+Promise ko resolve hone tak wait karta hai
+
+JS thread block ❌ nahi hota
+
+Event loop ka use hota hai
+
+🔹 Example: Simple Promise
+function delay() {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve("Done after 2 sec");
+    }, 2000);
+  });
+}
+
+async function run() {
+  console.log("Start");
+  const msg = await delay();
+  console.log(msg);
+  console.log("End");
+}
+
+run();
+
+🖨 Output:
+Start
+(wait 2 sec)
+Done after 2 sec
+End
+
+🔹 Error Handling (VERY IMPORTANT 🔥)
+async function fetchData() {
+  try {
+    const res = await fetch("wrong_url");
+    const data = await res.json();
+    console.log(data);
+  } catch (error) {
+    console.log("Error:", error.message);
+  }
+}
+
+
+👉 await error = catch block
+(Exactly like try–catch in sync code)
+
+🔹 Multiple await (Sequential)
+async function example() {
+  const a = await task1(); // waits
+  const b = await task2(); // waits
+  const c = await task3(); // waits
+}
+
+
+🔹 Parallel execution (FAST ⚡)
+async function example() {
+  const p1 = task1();
+  const p2 = task2();
+
+  const result1 = await p1;
+  const result2 = await p2;
+
+  console.log(result1, result2);
+}
+
+
+OR best way 👇
+
+const results = await Promise.all([task1(), task2()]);
+
+🔹 async/await with Array (VERY COMMON INTERVIEW Q)
+
+
+
+✅ Correct way
+
+for (const item of arr) {
+  await process(item);
+}
+
+
+OR parallel:
+
+await Promise.all(arr.map(item => process(item)));
+
+🔹 Real-world API Example (MERN style)
+async function getUser() {
+  try {
+    const res = await fetch("/api/user");
+    
+    if (!res.ok) {
+      throw new Error("Failed to fetch");
+    }
+
+    const user = await res.json();
+    console.log(user);
+  } catch (err) {
+    console.log(err.message);
+  }
+}
+
+
+🔹 When NOT to use await
+
+❌ Blocking independent tasks
+❌ Inside normal callback without async
